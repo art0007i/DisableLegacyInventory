@@ -1,6 +1,7 @@
 # DisableLegacyInventory
 
 A [NeosModLoader](https://github.com/zkxs/NeosModLoader) mod for [Neos VR](https://neos.com/) that disables the legacy inventory gesture, but it has a config option that can enable it again.
+This also does not disable the CTRL + I keybind to open the legacy inventory, so you can use a virtual multi key with that combo to open it as well.
 
 ## Installation
 1. Install [NeosModLoader](https://github.com/zkxs/NeosModLoader).
