@@ -1,25 +1,21 @@
 using HarmonyLib;
-using NeosModLoader;
+using ResoniteModLoader;
 using System;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using FrooxEngine;
 
 namespace DisableLegacyInventory
 {
-    public class DisableLegacyInventory : NeosMod
+    public class DisableLegacyInventory : ResoniteMod
     {
         public override string Name => "DisableLegacyInventory";
         public override string Author => "art0007i";
-        public override string Version => "1.0.0";
+        public override string Version => "2.0.0";
         public override string Link => "https://github.com/art0007i/DisableLegacyInventory/";
 
         [AutoRegisterConfigKey]
         public ModConfigurationKey<bool> KEY_ENABLE = new("enable", "If true you will not be able to use the legacy inventory gesture", () => true);
 
-        public static Action<CommonTool> dashDelegate;
+        public static Action<InteractionHandler> dashDelegate;
         public static bool fail = false;
         public override void OnEngineInit()
         {
@@ -31,21 +27,21 @@ namespace DisableLegacyInventory
             GetConfiguration().OnThisConfigurationChanged += ConfigHandler;
 
 
-            var userspaceToggle = AccessTools.Field(typeof(CommonTool), "_userspaceToggle");
+            var userspaceToggle = AccessTools.Field(typeof(InteractionHandler), "_userspaceToggle");
             Engine.Current.OnReady += () => {
-                var tool = Userspace.UserspaceWorld.LocalUser.Root.Slot.GetComponentInChildren<CommonTool>((tool) => tool.Side == Chirality.Left);
+                var tool = Userspace.UserspaceWorld.LocalUser.Root.Slot.GetComponentInChildren<InteractionHandler>((tool) => tool.Side == Chirality.Left);
                 if(tool == null)
                 {
                     Error("Failed to locate common tool. This means the mod will not work at all.");
                     fail = true; // doing this cause if we cause a null reference exception here, the game will fully crash
                     return;
                 }
-                dashDelegate = userspaceToggle.GetValue(tool) as Action<CommonTool>;
+                dashDelegate = userspaceToggle.GetValue(tool) as Action<InteractionHandler>;
                 Msg(dashDelegate);
                 var dash = Userspace.UserspaceWorld.RootSlot.GetComponentInChildren<UserspaceRadiantDash>();
                 if (GetConfiguration().GetValue(KEY_ENABLE))
                 {
-                    userspaceToggle.SetValue(tool, (CommonTool ct) => { dash.Open = !dash.Open; });
+                    userspaceToggle.SetValue(tool, (InteractionHandler ct) => { dash.Open = !dash.Open; });
                 }
             };
         }
@@ -55,12 +51,12 @@ namespace DisableLegacyInventory
             if (fail) return;
             if(configurationChangedEvent.Key == KEY_ENABLE)// sanity check
             { 
-                var userspaceToggle = AccessTools.Field(typeof(CommonTool), "_userspaceToggle");
-                var tool = Userspace.UserspaceWorld.LocalUser.Root.Slot.GetComponentInChildren<CommonTool>((tool) => tool.Side == Chirality.Left);
+                var userspaceToggle = AccessTools.Field(typeof(InteractionHandler), "_userspaceToggle");
+                var tool = Userspace.UserspaceWorld.LocalUser.Root.Slot.GetComponentInChildren<InteractionHandler>((tool) => tool.Side == Chirality.Left);
                 if (configurationChangedEvent.Config.GetValue(KEY_ENABLE))
                 {
                     var dash = Userspace.UserspaceWorld.RootSlot.GetComponentInChildren<UserspaceRadiantDash>();
-                    userspaceToggle.SetValue(tool, (CommonTool ct) => { dash.Open = !dash.Open;});
+                    userspaceToggle.SetValue(tool, (InteractionHandler ct) => { dash.Open = !dash.Open;});
                 }
                 else
                 {
